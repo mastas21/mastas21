@@ -1,24 +1,25 @@
 
+
 from urllib import request, response
 import requests
 import constants
+from shapely.geometry import shape, Point
 
 
-def fct(liste):
-    
+
+def fct():
     response = requests.get(constants.BASE)
     dict=response.json()
-    for nis in range(len(dict['features'])):
-        for key in  dict['features'][nis]['geometry']['coordinates']:
-            for i in key:
-                if i == liste:
-                    print('trouveeee')
-                    print(dict['features'][nis]['properties']['MESSAGE_FR'])
-                    break
-        break
-                
+# construct point based on lon/lat returned by geocoder
+    point = Point( -73.6062391 , 45.5973446)
+# check each polygon to see if it contains the point
+    for feature in dict['features']:
+        
+        polygon = shape(feature['geometry'])
     
-    return dict
+        if polygon.contains(point):
+            print ('Found containing polygon:', feature)
+            break
+    
 
-
-fct([ -73.567031982444405, 45.490135392137702 ])
+fct()
